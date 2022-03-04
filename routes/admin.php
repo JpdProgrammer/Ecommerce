@@ -15,7 +15,7 @@ use App\Http\Livewire\Admin\ShowProducts2;
 use App\Http\Livewire\Admin\UserComponent;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', ShowProducts2::class)->name('admin.index');
+Route::get('/', ShowProducts::class)->name('admin.index');
 
 Route::get('products/{product}/edit', function () {})->name('admin.products.edit');
 

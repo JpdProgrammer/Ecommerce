@@ -15,7 +15,9 @@ class AddCartItemSize extends Component
     public $qty = 1;
     public $quantity = 0;
     public $color_id = '';
-    public $options = [];
+    public $options = [
+        'sold' => 0
+    ];
 
     public function mount()
     {

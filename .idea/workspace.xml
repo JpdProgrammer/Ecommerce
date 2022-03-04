@@ -2,10 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2ee11ced-f2b9-4097-984f-0ad4284c36ee" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.phpunit.result.cache" beforeDir="false" afterPath="$PROJECT_DIR$/.phpunit.result.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/AddCartItem.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/AddCartItem.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/AddCartItemColor.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/AddCartItemColor.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/AddCartItemSize.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/AddCartItemSize.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Livewire/PaymentOrder.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/PaymentOrder.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Models/Product.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/Product.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/factories/ProductFactory.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/factories/ProductFactory.php" afterDir="false" />
@@ -255,7 +255,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1646336326109</updated>
-      <workItem from="1646336327415" duration="58869000" />
+      <workItem from="1646336327415" duration="60328000" />
     </task>
     <servers />
   </component>

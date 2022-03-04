@@ -2,8 +2,10 @@
 
 namespace Tests\Feature\Examen;
 
+use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -68,10 +70,37 @@ class ExamenTest extends TestCase
         $producto2 = $this->createProduct($subcategory, $brand);
         $this->createImages($producto2);
 
+        $producto3= $this->createProduct($subcategory, $brand);
+        $this->createImages($producto2);
+
         $this->actingAs($user);
 
-        $this->createCart($producto1, 1);
-        $this->createCart($producto2, 1);
+        Livewire::test('add-cart-item', ['product' => $producto1])
+            ->call('addItem');
+
+        Livewire::test('add-cart-item', ['product' => $producto2])
+            ->call('addItem');
+
+        $producto1Precio = $producto1->price;
+        $producto2Precio = $producto2->price;
+        $producto1Cantidad = $producto1->quantity;
+        $producto2Cantidad = $producto2->quantity;
+
+        Cart::erase($user->id);
+        Cart::store($user->id);
+
+        Cart::destroy();
+
+        Cart::merge($user->id);
+
+        $this->get('/shopping-cart')
+            ->assertSee($producto1->name)
+            ->assertSee($producto1Cantidad)
+            ->assertSee($producto1Precio)
+            ->assertSee($producto2->name)
+            ->assertSee($producto2Cantidad)
+            ->assertSee($producto2Precio)
+            ->assertDontSee($producto3->name);
 
     }
 

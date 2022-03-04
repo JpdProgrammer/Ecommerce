@@ -4,6 +4,7 @@ namespace Tests\Feature\Examen;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class ExamenTest extends TestCase
@@ -51,6 +52,27 @@ class ExamenTest extends TestCase
         $this->get('/shopping-cart')
             ->assertSee($producto[0]->name)
             ->assertDontSee($producto[1]);
+    }
+
+    /** @test */
+    public function it_saves_products_on_cart() {
+
+        $category = $this->createCategory();
+        $subcategory = $this->createSubcategory($category);
+        $brand = $this->createBrand($category);
+        $user = $this->createUser();
+
+        $producto1 = $this->createProduct($subcategory, $brand);
+        $this->createImages($producto1);
+
+        $producto2 = $this->createProduct($subcategory, $brand);
+        $this->createImages($producto2);
+
+        $this->actingAs($user);
+
+        $this->createCart($producto1, 1);
+        $this->createCart($producto2, 1);
+
     }
 
 }

@@ -137,6 +137,7 @@ class PruebaTest extends TestCase
 
         $originalStock = $producto1;
 
+
         Livewire::test('add-cart-item', ['product' => $producto1])
             ->call('addItem');
 

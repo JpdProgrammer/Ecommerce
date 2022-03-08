@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\QueryFilter;
 
 class Product extends Model
 {
@@ -58,6 +59,11 @@ class Product extends Model
         } else {
             return $this->quantity;
         }
+    }
+
+    public function scopeFilterBy($query, QueryFilter $filters, array $data)
+    {
+        return $filters->applyto($query, $data);
     }
 
 }

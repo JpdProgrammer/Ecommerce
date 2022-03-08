@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Http\Livewire\CreateOrder;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\City;
@@ -16,270 +17,154 @@ use App\Models\Subcategory;
 use App\Models\User;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Livewire;
 
 trait CreateData
 {
     use WithFaker;
 
-    public function generate_product($cantidad = 1, $colorType = false, $sizeType = false) {
-        $producto = [];
-        $contador = 0;
+    public function generate_product($products = 1, $addToCart = false, $createOrder = false, $color = false, $colorQuantity = 0, $size = false, $productQuantity = 1,  $productStatus = 2, $users = 0) {
 
-        while ($contador <= $cantidad) {
-            $category = $this->createCategory();
-            $subcategory = $this->createMySubcategory($category, $colorType, $sizeType);
-            $brand = $this->createBrand($category);
-            $producto[$contador] = $this->createProduct($subcategory, $brand);
-            $this->createImages($producto[$contador]);
+        $category = Category::factory()->create();
 
-            if($sizeType != null) {
-                $this->createSizeAndColor($producto[$contador]);
-            } else if ($colorType != null) {
-                $this->createColor($producto[$contador]);
-            }
-
-            $contador++;
-        }
-
-        return $producto;
-
-    }
-
-    public function add_product_to_cart($cantidad, $cantidadProducto) {
-        $productos = [];
-        $contador = 0;
-        $productos[] = $this->generate_product(2);
-
-        foreach ($productos as $producto) {
-
-            if($producto->sizes->count()) {
-                $this->createCartSize($producto, 1);
-            } else if($producto->colors->count()) {
-                $this->createCartColor($producto, 1);
-            } else {
-                $this->createCart($producto, 1);
-            }
-
-        }
-
-        return $productos;
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public function createCategory()
-    {
-        return Category::factory()->create();
-    }
-
-    public function createMySubcategory($category, $colorType, $sizeType)
-    {
-        return Subcategory::factory()->create([
+        $subcategory = Subcategory::factory()->create([
             'category_id' => $category->id,
-            'color' => $colorType,
-            'size' => $sizeType,
+            'color' => $color,
+            'size' => $size,
         ]);
-    }
 
-    public function createSubcategory($category)
-    {
-        return Subcategory::factory()->create([
-            'category_id' => $category->id,
-        ]);
-    }
-
-    public function createSubcategoryColor($category)
-    {
-        return Subcategory::factory()->create([
-            'category_id' => $category->id,
-            'color' => true,
-        ]);
-    }
-
-    public function createSubcategorySize($category)
-    {
-        return Subcategory::factory()->create([
-            'category_id' => $category->id,
-            'color' => true,
-            'size' => true,
-        ]);
-    }
-
-    public function createBrand($category)
-    {
         $brand = Brand::factory()->create();
         $brand->categories()->attach($category->id);
-        return $brand;
-    }
 
-    public function createProduct($subcategory, $brand)
-    {
-        return Product::factory()->create([
+        Product::factory($products)->create([
             'subcategory_id' => $subcategory->id,
-            'brand_id' => $brand->id
-        ]);
-    }
-
-    public function createImages($product)
-    {
-        Image::factory(4)->create([
-            'imageable_id' => $product->id,
-            'imageable_type' => Product::class,
-        ]);
-    }
-
-    public function createUser()
-    {
-        return User::factory()->create();
-    }
-
-    public function createCart($product, $qty)
-    {
-        $options = [
-            'color_id' => null,
-            'size_id' => null,
-        ];
-        $options['image'] = Storage::url($product->images->first()->url);
-
-        return Cart::add([
-            'id' => $product->id,
-            'name' => $product->name,
-            'qty' => $qty,
-            'price' => $product->price,
-            'weight' => 550,
-            'options' => $options,
-        ]);
-
-    }
-
-    public function createCartColor($product, $qty)
-    {
-        $options = [
-            'color_id' => $product->colors->first()->id,
-            'color' => $product->colors->first()->name,
-            'size_id' => null,
-        ];
-        $options['image'] = Storage::url($product->images->first()->url);
-
-        return Cart::add([
-            'id' => $product->id,
-            'name' => $product->name,
-            'qty' => $qty,
-            'price' => $product->price,
-            'weight' => 550,
-            'options' => $options,
-        ]);
-    }
-
-    public function createCartSize($product, $qty)
-    {
-        $size = $product->sizes->first();
-
-        $options = [
-            'color_id' => $size->colors->first()->id,
-            'color' => $size->colors->first()->name,
-            'size_id' => $size->id,
-            'size' => $size->name,
-        ];
-        $options['image'] = Storage::url($product->images->first()->url);
-
-        return Cart::add([
-            'id' => $product->id,
-            'name' => $product->name,
-            'qty' => $qty,
-            'price' => $product->price,
-            'weight' => 550,
-            'options' => $options,
-        ]);
-
-    }
-
-    public function createColor($product, $quantity = 10, $idC = 1)
-    {
-        Color::create([
-            'name' => $this->faker->sentence(1),
-        ]);
-
-        $product->colors()->attach([
-            $idC => [
-                'quantity' => $quantity,
-            ],
-        ]);
-    }
-
-
-    public function createSizeAndColor($product , $quantity = 10, $idC = 1)
-    {
-        $product->sizes()->create([
-            'name' => $this->faker->sentence(1),
-        ]);
-
-        Color::create([
-            'name' => $this->faker->sentence(1),
-        ]);
-
-        $sizes = Size::all();
-
-        foreach ($sizes as $size) {
-            $size->colors()
-                ->attach([
-                    $idC => [
-                        'quantity' => $quantity,
-                    ],
-                ]);
-        }
-    }
-
-    public function createOrder($user)
-    {
-        $order = new Order();
-
-        $order->user_id = $user->id;
-        $order->contact = 'Contacto';
-        $order->phone = '123456789';
-        $order->envio_type = 1;
-        $order->shipping_cost = 1;
-        $order->total = 1;
-        $order->content = Cart::content();
-
-        $order->save();
-
-        return $order;
-    }
-
-    public function createDepartmentCityAndDistrict()
-    {
-        Department::factory(8)->create()->each(function (Department $department) {
-            City::factory(8)->create([
-                'department_id' => $department->id
-            ])->each(function (City $city) {
-                    District::factory(8)->create([
-                    'city_id' => $city->id
-                ]);
-            });
+            'brand_id' => $brand->id,
+            'quantity' => $productQuantity,
+            'status' => $productStatus,
+        ])->each(function(Product $product){
+            Image::factory(4)->create([
+                'imageable_id' => $product->id,
+                'imageable_type' => Product::class
+            ]);
         });
+
+        if ($users != 0) {
+            $user = User::factory($users)->create();
+        }
+
+        if ($color) {
+            $colors =  Color::create([
+                'name' => $this->faker->sentence(1),
+            ]);
+
+            Product::first()->colors()->attach([
+                1 => [
+                    'quantity' => $colorQuantity,
+                ],
+            ]);
+        }
+
+        if ($size) {
+            Product::first()->sizes()->create([
+                'name' => $this->faker->sentence(1),
+            ]);
+
+            Color::create([
+                'name' => $this->faker->sentence(1),
+            ]);
+
+            $sizes = Size::all();
+
+            foreach ($sizes as $size) {
+                $size->colors()
+                    ->attach([
+                        1 => [
+                            'quantity' => $colorQuantity,
+                        ],
+                    ]);
+            }
+        }
+
+        if($addToCart) {
+
+            $product = Product::first();
+
+            if ($size) {
+
+                $options = [
+                    'color_id' => $size->colors->first()->id,
+                    'color' => $size->colors->first()->name,
+                    'size_id' => $size->id,
+                    'size' => $size->name,
+                ];
+                $options['image'] = Storage::url($product->images->first()->url);
+
+            } else if($color) {
+
+                $options = [
+                    'color_id' => $product->colors->first()->id,
+                    'color' => $product->colors->first()->name,
+                    'size_id' => null,
+                ];
+                $options['image'] = Storage::url($product->images->first()->url);
+
+            } else {
+
+                $options = [
+                    'color_id' => null,
+                    'size_id' => null,
+                ];
+                $options['image'] = Storage::url($product->images->first()->url);
+
+            }
+
+            Cart::add([
+                'id' => $product->id,
+                'name' => $product->name,
+                'qty' => $productQuantity,
+                'price' => $product->price,
+                'weight' => 550,
+                'options' => $options,
+            ]);
+
+        }
+
+        if($createOrder) {
+
+            $user = User::factory()->create();
+            $this->actingAs($user);
+            Cart::store($user->id);
+
+        }
+
     }
+
+    public function generate_search($productName = 'pepe') {
+
+        $category = Category::factory()->create();
+
+        $subcategory = Subcategory::factory()->create([
+            'category_id' => $category->id,
+            'color' => false,
+            'size' => false,
+        ]);
+
+        $brand = Brand::factory()->create();
+        $brand->categories()->attach($category->id);
+
+        Product::factory()->create([
+            'name' => $productName
+        ]);
+        $this->createImages(Product::first());
+
+        Product::factory()->create();
+        $this->createImages(Product::find(2));
+
+    }
+
+
 
     function quantity($product_id, $color_id = null, $size_id = null)
     {
@@ -311,6 +196,25 @@ trait CreateData
 
     function qty_available($product_id, $color_id = null, $size_id = null){
         return quantity($product_id, $color_id, $size_id) - qty_added($product_id, $color_id, $size_id);
+    }
+
+    public function createCart($product, $qty)
+    {
+        $options = [
+            'color_id' => null,
+            'size_id' => null,
+        ];
+        $options['image'] = Storage::url($product->images->first()->url);
+
+        return Cart::add([
+            'id' => $product->id,
+            'name' => $product->name,
+            'qty' => $qty,
+            'price' => $product->price,
+            'weight' => 550,
+            'options' => $options,
+        ]);
+
     }
 
 }

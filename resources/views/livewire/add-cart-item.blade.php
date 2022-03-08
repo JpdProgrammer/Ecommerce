@@ -5,7 +5,6 @@
     <div class="flex">
         <div class="mr-4">
             <x-jet-secondary-button
-                dusk="decrease-quantity-btn"
                 disabled
                 x-bind:disabled="$wire.qty <= 1"
                 wire:loading.attr="disabled"
@@ -13,9 +12,8 @@
                 wire:click="decrement">
                 -
             </x-jet-secondary-button>
-            <span dusk="product-quantity" class="mx-2 text-gray-700">{{ $qty }}</span>
+            <span class="mx-2 text-gray-700">{{ $qty }}</span>
             <x-jet-secondary-button
-                dusk="increase-quantity-btn"
                 x-bind:disabled="$wire.qty >= $wire.quantity"
                 wire:loading.attr="disabled"
                 wire:target="increment"

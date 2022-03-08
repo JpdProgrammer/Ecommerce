@@ -6,13 +6,19 @@
       <change beforePath="$PROJECT_DIR$/.phpunit.result.cache" beforeDir="false" afterPath="$PROJECT_DIR$/.phpunit.result.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Livewire/AddCartItemColor.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/AddCartItemColor.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Livewire/AddCartItemSize.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/AddCartItemSize.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Livewire/Admin/ShowProducts2.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/Admin/ShowProducts2.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Livewire/PaymentOrder.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Livewire/PaymentOrder.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Models/Product.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/Product.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/factories/ProductFactory.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/factories/ProductFactory.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/migrations/2022_01_09_133320_create_products_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2022_01_09_133320_create_products_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examen.txt" beforeDir="false" afterPath="$PROJECT_DIR$/examen.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/livewire/add-cart-item.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/add-cart-item.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/livewire/admin/show-products-2.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/admin/show-products-2.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/views/livewire/admin/show-products.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/livewire/admin/show-products.blade.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/admin.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/admin.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/CreateData.php" beforeDir="false" afterPath="$PROJECT_DIR$/tests/CreateData.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/Feature/Examen/ExamenTest.php" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Feature/Examen/ExamenTest.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Feature/Livewire/PruebaTest.php" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Feature/Livewire/PruebaTest.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/TestCase.php" beforeDir="false" afterPath="$PROJECT_DIR$/tests/TestCase.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -255,7 +261,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1646336326109</updated>
-      <workItem from="1646336327415" duration="60328000" />
+      <workItem from="1646336327415" duration="97758000" />
     </task>
     <servers />
   </component>

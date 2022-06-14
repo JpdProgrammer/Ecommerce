@@ -1,0 +1,4 @@
+Para los tests lo que he hice en un principio está en la carpeta Examen pero el problema de esos tests es que solo pasan si los ejecutas uno a uno,
+despueś de darle muchas vueltas he conseguido refactorizarlo y hacer que pasen todos a la vez. Los tests 'buenos' son los de la carpeta Examen2 que
+pasan todos a la vez.
+Los tests están todos hechos con phpunit porque Dusk no me funcionaba por eso la semana 1 no tiene tests hechos

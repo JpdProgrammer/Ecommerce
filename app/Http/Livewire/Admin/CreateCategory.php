@@ -11,15 +11,9 @@ use Livewire\WithFileUploads;
 
 class CreateCategory extends Component
 {
+
     use WithFileUploads;
-
-    public $brands, $categories, $image, $image2;
-
-    public $category;
-
-    public $editImage;
-
-    public $listeners = ['delete'];
+    public $brands, $categories, $image, $image2, $category, $editImage;
 
     public $createForm = [
         'name' => null,
@@ -39,11 +33,11 @@ class CreateCategory extends Component
     ];
 
     protected $rules = [
-        'createForm.name' => 'required',
-        'createForm.slug' => 'required|unique:categories,slug',
-        'createForm.icon' => 'required',
-        'createForm.image' => 'required|image|max:1024',
-        'createForm.brands' => 'required',
+      'createForm.name' => 'required',
+      'createForm.slug' => 'required|unique:categories,slug',
+      'createForm.icon' => 'required',
+      'createForm.image' => 'required|image|max:1024',
+      'createForm.brands' => 'required',
     ];
 
     protected $validationAttributes = [
@@ -54,21 +48,18 @@ class CreateCategory extends Component
         'createForm.brands' => 'marcas',
         'editForm.name' => 'nombre',
         'editForm.slug' => 'slug',
-        'editForm.icon' => 'ícono',
-        'editImage' => 'imagen',
-        'editForm.brands' => 'marcas'
+        'editForm.icon' => 'icono',
+        'editForm.image' => 'imagen',
+        'editForm.brands' => 'marcas',
     ];
+
+    protected $listeners = ['delete'];
 
     public function mount()
     {
         $this->getBrands();
         $this->getCategories();
         $this->image = 1;
-    }
-
-    public function getBrands()
-    {
-        $this->brands = Brand::all();
     }
 
     public function getCategories()
@@ -81,9 +72,9 @@ class CreateCategory extends Component
         $this->createForm['slug'] = Str::slug($value);
     }
 
-    public function updatedEditFormName($value)
+    public function getBrands()
     {
-        $this->editForm['slug'] = Str::slug($value);
+        $this->brands = Brand::all();
     }
 
     public function save()
@@ -91,17 +82,16 @@ class CreateCategory extends Component
         $this->validate();
 
         $image = $this->createForm['image']->store('categories', 'public');
+        $this->image = 2;
 
         $category = Category::create([
             'name' => $this->createForm['name'],
             'slug' => $this->createForm['slug'],
             'icon' => $this->createForm['icon'],
-            'image' => $image
+            'image' => $image,
         ]);
 
         $category->brands()->attach($this->createForm['brands']);
-
-        $this->image = 2;
         $this->reset('createForm');
 
         $this->getCategories();
@@ -110,7 +100,6 @@ class CreateCategory extends Component
 
     public function delete(Category $category)
     {
-        $category->brands()->detach();
         $category->delete();
         $this->getCategories();
     }
@@ -118,12 +107,8 @@ class CreateCategory extends Component
     public function edit(Category $category)
     {
         $this->image2 = rand();
-        $this->image = rand();
-
         $this->reset(['editImage']);
-
         $this->resetValidation();
-
         $this->category = $category;
 
         $this->editForm['open'] = true;
@@ -132,9 +117,11 @@ class CreateCategory extends Component
         $this->editForm['icon'] = $category->icon;
         $this->editForm['image'] = $category->image;
         $this->editForm['brands'] = $category->brands->pluck('id');
+
     }
 
-    public function update(){
+    public function update()
+    {
         $rules = [
             'editForm.name' => 'required',
             'editForm.slug' => 'required|unique:categories,slug,' . $this->category->id,
@@ -160,6 +147,11 @@ class CreateCategory extends Component
         $this->reset(['editForm', 'editImage']);
 
         $this->getCategories();
+    }
+
+    public function updatedEditFormName($value)
+    {
+        $this->editForm['slug'] = Str::slug($value);
     }
 
     public function render()

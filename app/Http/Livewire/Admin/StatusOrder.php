@@ -8,16 +8,16 @@ class StatusOrder extends Component
 {
     public $order, $status;
 
-    public function mount()
-    {
-        $this->status = $this->order->status;
-    }
-
     public function update()
     {
         $this->order->status = $this->status;
 
-        $this->order->save();
+        $this->order->save;
+    }
+
+    public function mount()
+    {
+        $this->status = $this->order->status;
     }
 
     public function render()

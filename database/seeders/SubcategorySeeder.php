@@ -21,7 +21,7 @@ class SubcategorySeeder extends Seeder
                 'category_id' => 1,
                 'name' => 'Celulares y smartphones',
                 'slug' => Str::slug('Celulares y smartphones'),
-                'color' => true
+                'color' => true,
             ],
             [
                 'category_id' => 1,
@@ -53,7 +53,7 @@ class SubcategorySeeder extends Seeder
             [
                 'category_id' => 3,
                 'name' => 'Xbox',
-                'slug' => Str::slug('xbox'),
+                'slug' => Str::slug('Xbox'),
             ],
             [
                 'category_id' => 3,
@@ -61,12 +61,12 @@ class SubcategorySeeder extends Seeder
                 'slug' => Str::slug('Play Station'),
             ],
             [
-                'category_id' => 3,
+                'category_id' => 1,
                 'name' => 'Videojuegos para PC',
                 'slug' => Str::slug('Videojuegos para PC'),
             ],
             [
-                'category_id' => 3,
+                'category_id' => 1,
                 'name' => 'Nintendo',
                 'slug' => Str::slug('Nintendo'),
             ],
@@ -78,8 +78,8 @@ class SubcategorySeeder extends Seeder
             ],
             [
                 'category_id' => 4,
-                'name' => 'PC escritorio',
-                'slug' => Str::slug('PC escritorio'),
+                'name' => 'PC Escritorio',
+                'slug' => Str::slug('PC Escritorio'),
             ],
             [
                 'category_id' => 4,
@@ -97,14 +97,14 @@ class SubcategorySeeder extends Seeder
                 'name' => 'Mujeres',
                 'slug' => Str::slug('Mujeres'),
                 'color' => true,
-                'size' => true
+                'size' => true,
             ],
             [
                 'category_id' => 5,
                 'name' => 'Hombres',
                 'slug' => Str::slug('Hombres'),
                 'color' => true,
-                'size' => true
+                'size' => true,
             ],
             [
                 'category_id' => 5,
@@ -115,11 +115,10 @@ class SubcategorySeeder extends Seeder
                 'category_id' => 5,
                 'name' => 'Relojes',
                 'slug' => Str::slug('Relojes'),
-            ],
+            ]
         ];
 
-        foreach ($subcategories as $subcategory)
-        {
+        foreach ($subcategories as $subcategory) {
             Subcategory::create($subcategory);
         }
     }

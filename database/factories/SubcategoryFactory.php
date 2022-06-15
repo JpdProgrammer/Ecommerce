@@ -15,10 +15,8 @@ class SubcategoryFactory extends Factory
     {
         return [
             'name' => $this->faker->sentence(2),
-            'image' => 'subcategories/' . $this->faker->image(storage_path('app/public/subcategories'), 640, 480, null, false),
             'slug' => $this->faker->slug(3),
-            'color' => false,
-            'size' => false
+            'image' => 'subcategories/' . $this->faker->image(storage_path('app/public/subcategories'), 640, 480, null, false)
         ];
     }
 }

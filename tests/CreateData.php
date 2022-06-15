@@ -2,6 +2,10 @@
 
 namespace Tests;
 
+use App\Http\Livewire\AddCartItem;
+use App\Http\Livewire\AddCartItemColor;
+use App\Http\Livewire\AddCartItemSize;
+use App\Http\Livewire\Admin\CreateProduct;
 use App\Http\Livewire\CreateOrder;
 use App\Models\Brand;
 use App\Models\Category;
@@ -20,12 +24,24 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
+use Spatie\Permission\Models\Role;
 
 trait CreateData
 {
     use WithFaker;
 
-    public function generate_product($products = 1, $addToCart = false, $createOrder = false, $color = false, $colorQuantity = 0, $size = false, $productQuantity = 1,  $productStatus = 2, $users = 0) {
+    // generate_product_new y generate_product_to_search sirven para pasasr los tests de la carpeta Examen pero solo pasan si se ejecutan 1 a 1
+    public function generate_product_new($products = 1, $addToCart = false, $createOrder = false, $color = false, $colorQuantity = 0, $size = false, $productQuantity = 10,  $productStatus = 2, $envioType = 1, $anotherProduct = false, $users = 1, $userLogin = true, $userId = 1) {
+
+        if (User::all()->count() === 0 && $users != 0) {
+            User::factory($users)->create();
+        }
+
+        if ($userLogin === true && $users != 0) {
+            $this->actingAs(User::find($userId));
+        }
+
+        $originalProducts = Product::all()->count();
 
         $category = Category::factory()->create();
 
@@ -42,7 +58,7 @@ trait CreateData
             'subcategory_id' => $subcategory->id,
             'brand_id' => $brand->id,
             'quantity' => $productQuantity,
-            'status' => $productStatus,
+            'status' => $productStatus
         ])->each(function(Product $product){
             Image::factory(4)->create([
                 'imageable_id' => $product->id,
@@ -50,35 +66,26 @@ trait CreateData
             ]);
         });
 
-        if ($users != 0) {
-            $user = User::factory($users)->create();
-        }
-
         if ($color) {
-            $colors =  Color::create([
-                'name' => $this->faker->sentence(1),
-            ]);
-
-            Product::first()->colors()->attach([
-                1 => [
-                    'quantity' => $colorQuantity,
-                ],
-            ]);
-        }
-
-        if ($size) {
-            Product::first()->sizes()->create([
-                'name' => $this->faker->sentence(1),
-            ]);
-
             Color::create([
                 'name' => $this->faker->sentence(1),
             ]);
+            foreach (Product::all() as $product) {
+                $product->colors()->attach([
+                    1 => [
+                        'quantity' => $colorQuantity,
+                    ],
+                ]);
+            }
+        }
 
-            $sizes = Size::all();
+        if ($size) {
+            foreach (Product::all() as $product) {
+                $product->sizes()->create([
+                    'name' => $this->faker->sentence(1),
+                ]);
 
-            foreach ($sizes as $size) {
-                $size->colors()
+                Size::first()->colors()
                     ->attach([
                         1 => [
                             'quantity' => $colorQuantity,
@@ -87,61 +94,93 @@ trait CreateData
             }
         }
 
-        if($addToCart) {
+        if ($addToCart) {
+            for ($i = 1; $i <= $products; $i++) {
 
-            $product = Product::first();
+                $product = Product::find($originalProducts + $i);
 
-            if ($size) {
+                if ($size) {
+                    Livewire::test(AddCartItemSize::class, ['product' => $product])
+                        ->set('size_id', 1)
+                        ->set('color_id', 1)
+                        ->call('addItem');
 
-                $options = [
-                    'color_id' => $size->colors->first()->id,
-                    'color' => $size->colors->first()->name,
-                    'size_id' => $size->id,
-                    'size' => $size->name,
-                ];
-                $options['image'] = Storage::url($product->images->first()->url);
+                } else if($color) {
+                    Livewire::test(AddCartItemColor::class, ['product' => $product])
+                        ->set('color_id', 1)
+                        ->call('addItem');
 
-            } else if($color) {
-
-                $options = [
-                    'color_id' => $product->colors->first()->id,
-                    'color' => $product->colors->first()->name,
-                    'size_id' => null,
-                ];
-                $options['image'] = Storage::url($product->images->first()->url);
-
-            } else {
-
-                $options = [
-                    'color_id' => null,
-                    'size_id' => null,
-                ];
-                $options['image'] = Storage::url($product->images->first()->url);
-
+                } else {
+                    Livewire::test(AddCartItem::class, ['product' => $product])
+                        ->call('addItem');
+                }
             }
+        }
 
-            Cart::add([
-                'id' => $product->id,
-                'name' => $product->name,
-                'qty' => $productQuantity,
-                'price' => $product->price,
-                'weight' => 550,
-                'options' => $options,
+        if ($createOrder) {
+            Livewire::test(CreateOrder::class)
+                ->set('contact', 'Contacto')
+                ->set('phone', '123456789')
+                ->set('envio_type', $envioType)
+                ->set('shipping_cost', 1)
+                ->call('create_order');
+        }
+
+        if ($anotherProduct) {
+            $category = Category::factory()->create();
+
+            $subcategory = Subcategory::factory()->create([
+                'category_id' => $category->id,
+                'color' => $color,
+                'size' => $size,
             ]);
 
+            $brand = Brand::factory()->create();
+            $brand->categories()->attach($category->id);
+
+            Product::factory()->create([
+                'subcategory_id' => $subcategory->id,
+                'brand_id' => $brand->id,
+                'quantity' => $productQuantity,
+                'status' => $productStatus
+            ])->each(function(Product $product){
+                Image::factory(4)->create([
+                    'imageable_id' => $product->id,
+                    'imageable_type' => Product::class
+                ]);
+            });
+
+            if ($color) {
+                Color::create([
+                    'name' => $this->faker->sentence(1),
+                ]);
+                foreach (Product::all() as $product) {
+                    $product->colors()->attach([
+                        1 => [
+                            'quantity' => $colorQuantity,
+                        ],
+                    ]);
+                }
+            }
+
+            if ($size) {
+                foreach (Product::all() as $product) {
+                    $product->sizes()->create([
+                        'name' => $this->faker->sentence(1),
+                    ]);
+
+                    Size::first()->colors()
+                        ->attach([
+                            1 => [
+                                'quantity' => $colorQuantity,
+                            ],
+                        ]);
+                }
+            }
         }
-
-        if($createOrder) {
-
-            $user = User::factory()->create();
-            $this->actingAs($user);
-            Cart::store($user->id);
-
-        }
-
     }
 
-    public function generate_search($productName = 'pepe') {
+    public function generate_product_to_search($productName = 'pepe') {
 
         $category = Category::factory()->create();
 
@@ -154,67 +193,256 @@ trait CreateData
         $brand = Brand::factory()->create();
         $brand->categories()->attach($category->id);
 
+        $productsCount = Product::all()->count();
+
         Product::factory()->create([
             'name' => $productName
         ]);
-        $this->createImages(Product::first());
-
-        Product::factory()->create();
-        $this->createImages(Product::find(2));
-
-    }
-
-
-
-    function quantity($product_id, $color_id = null, $size_id = null)
-    {
-        $product = Product::find($product_id);
-        If ($size_id) {
-            $size = Size::find($size_id);
-            $quantity = $size->colors->find($color_id)->pivot->quantity;
-        } elseif ($color_id) {
-            $quantity = $product->colors->find($color_id)->pivot->quantity;
-        } else {
-            $quantity = $product->quantity;
-        }
-        return $quantity;
-    }
-
-    function qty_added($product_id, $color_id = null, $size_id = null)
-    {
-        $cart = Cart::content();
-        $item = $cart->where('id', $product_id)
-            ->where('options.color_id', $color_id)
-            ->where('options.size_id', $size_id)
-            ->first();
-        if ($item) {
-            return $item->qty;
-        } else {
-            return 0;
-        }
-    }
-
-    function qty_available($product_id, $color_id = null, $size_id = null){
-        return quantity($product_id, $color_id, $size_id) - qty_added($product_id, $color_id, $size_id);
-    }
-
-    public function createCart($product, $qty)
-    {
-        $options = [
-            'color_id' => null,
-            'size_id' => null,
-        ];
-        $options['image'] = Storage::url($product->images->first()->url);
-
-        return Cart::add([
-            'id' => $product->id,
-            'name' => $product->name,
-            'qty' => $qty,
-            'price' => $product->price,
-            'weight' => 550,
-            'options' => $options,
+        Image::factory(4)->create([
+            'imageable_id' => Product::find($productsCount+1)->id,
+            'imageable_type' => Product::class,
         ]);
 
+        $productsCount++;
+
+        Product::factory()->create();
+        Image::factory(4)->create([
+            'imageable_id' => Product::find($productsCount+1)->id,
+            'imageable_type' => Product::class,
+        ]);
+
+    }
+
+    // estos tres métodos los he refactorizado para que pasen los tests de la carpeta Examen2 todos a la vez sin que de fallos
+    public function generate_product_refactor($products = 1, $addToCart = false, $createOrder = false, $color = false, $colorQuantity = 0, $size = false, $productQuantity = 10,  $productStatus = 2, $envioType = 1, $anotherProduct = false, $users = 1, $userLogin = true, $userId = 1)
+    {
+        $data = [];
+
+        if (User::all()->count() === 0 && $users != 0) {
+            $data['users'] = User::factory($users)->create();
+        }
+
+        if ($userLogin === true && $users != 0) {
+            foreach (User::all() as $key => $userAll) {
+                if (($key + 1) === $userId) {
+                    $user = $userAll;
+                }
+            }
+            $this->actingAs($user);
+            $data['userActive'] = $user;
+        }
+
+        $originalProducts = Product::all()->count();
+
+        $category = Category::factory()->create();
+        $data['category'] = $category;
+
+        $subcategory = Subcategory::factory()->create([
+            'category_id' => $category->id,
+            'color' => $color,
+            'size' => $size,
+        ]);
+        $data['subcategory'] = $subcategory;
+
+        $brand = Brand::factory()->create();
+        $brand->categories()->attach($category->id);
+        $data['brand'] = $brand;
+
+        $data['products'] = Product::factory($products)->create([
+            'subcategory_id' => $subcategory->id,
+            'brand_id' => $brand->id,
+            'quantity' => $productQuantity,
+            'status' => $productStatus,
+            'price' => 30
+        ])->each(function(Product $product){
+            Image::factory(4)->create([
+                'imageable_id' => $product->id,
+                'imageable_type' => Product::class
+            ]);
+        });
+
+        if ($color) {
+            $data['color'] = Color::create([
+                'name' => $this->faker->sentence(1),
+            ]);
+            $color_id = Color::first()->id;
+
+            foreach (Product::all() as $product) {
+                $product->colors()->attach([
+                    $color_id => [
+                        'quantity' => $colorQuantity,
+                    ],
+                ]);
+            }
+        }
+
+        if ($size) {
+            foreach (Product::all() as $product) {
+                $product->sizes()->create([
+                    'name' => $this->faker->sentence(1),
+                ]);
+                $size_id = Size::first()->id;
+
+                Size::first()->colors()
+                    ->attach([
+                        $color_id => [
+                            'quantity' => $colorQuantity,
+                        ],
+                    ]);
+            }
+            $data['size'] = Size::first();
+        }
+
+        if ($addToCart) {
+            for ($i = 1; $i <= $products; $i++) {
+
+                foreach (Product::all() as $key => $productAll) {
+                    if (($key + 1) === $i) {
+                        $product = $productAll;
+                    }
+                }
+
+                if ($size) {
+                    Livewire::test(AddCartItemSize::class, ['product' => $product])
+                        ->set('size_id', $size_id)
+                        ->set('color_id', $color_id)
+                        ->call('addItem');
+
+                } else if($color) {
+                    Livewire::test(AddCartItemColor::class, ['product' => $product])
+                        ->set('color_id', $color_id)
+                        ->call('addItem');
+
+                } else {
+                    Livewire::test(AddCartItem::class, ['product' => $product])
+                        ->call('addItem');
+                }
+            }
+        }
+
+        if ($createOrder) {
+            Livewire::test(CreateOrder::class)
+                ->set('contact', 'Contacto')
+                ->set('phone', '123456789')
+                ->set('envio_type', $envioType)
+                ->set('shipping_cost', 1)
+                ->call('create_order');
+        }
+
+        $data['cart'] = Cart::content();
+        $data['order'] = Order::first();
+
+        if ($anotherProduct) {
+            $category = Category::factory()->create();
+            $data['anotherCategory'] = $category;
+
+            $subcategory = Subcategory::factory()->create([
+                'category_id' => $category->id,
+                'color' => $color,
+                'size' => $size,
+            ]);
+            $data['anotherSubcategory'] = $subcategory;
+
+            $brand = Brand::factory()->create();
+            $brand->categories()->attach($category->id);
+            $data['anotherBrand'] = $brand;
+
+            $data['anotherProduct'] = Product::factory()->create([
+                'subcategory_id' => $subcategory->id,
+                'brand_id' => $brand->id,
+                'quantity' => $productQuantity,
+                'status' => 2,
+                'price' => 20
+            ]);
+            Image::factory(4)->create([
+                'imageable_id' => $data['anotherProduct']->id,
+                'imageable_type' => Product::class
+            ]);
+
+            if ($color) {
+                $data['anotherColor'] = Color::create([
+                    'name' => $this->faker->sentence(1),
+                ]);
+                foreach (Product::all() as $product) {
+                    $product->colors()->attach([
+                        1 => [
+                            'quantity' => $colorQuantity,
+                        ],
+                    ]);
+                }
+            }
+
+            if ($size) {
+                foreach (Product::all() as $product) {
+                    $product->sizes()->create([
+                        'name' => $this->faker->sentence(1),
+                    ]);
+
+                    Size::first()->colors()
+                        ->attach([
+                            1 => [
+                                'quantity' => $colorQuantity,
+                            ],
+                        ]);
+                }
+                $data['anotherSize'] = Size::first();
+            }
+        }
+
+        return $data;
+    }
+
+    public function generate_product_to_search_refactor($productName = 'pepe')
+    {
+        $data = [];
+
+        $category = Category::factory()->create();
+        $data['category'] = $category;
+
+        $subcategory = Subcategory::factory()->create([
+            'category_id' => $category->id,
+            'color' => false,
+            'size' => false,
+        ]);
+        $data['subcategory'] = $subcategory;
+
+        $brand = Brand::factory()->create();
+        $brand->categories()->attach($category->id);
+        $data['brand'] = $brand;
+
+
+        $data['productSearched'] = Product::factory()->create([
+            'name' => $productName
+        ]);
+        Image::factory(4)->create([
+            'imageable_id' => $data['productSearched']->id,
+            'imageable_type' => Product::class,
+        ]);
+
+        $data['product'] = Product::factory()->create();
+        Image::factory(4)->create([
+            'imageable_id' => $data['product']->id,
+            'imageable_type' => Product::class,
+        ]);
+
+        return $data;
+    }
+
+    public function create_a_new_product($category_id, $subcategory_id, $name, $slug, $description, $brand_id, $price, $quantity){
+        Role::create(['name' => 'admin']);
+        $userAdmin = User::factory()->create()->assignRole('admin');
+        $this->actingAs($userAdmin);
+
+        Livewire::test(CreateProduct::class)
+            ->set('category_id', $category_id)
+            ->set('subcategory_id', $subcategory_id)
+            ->set('name', $name)
+            ->set('slug', $slug)
+            ->set('description', $description)
+            ->set('brand_id', $brand_id)
+            ->set('price', $price)
+            ->set('quantity', $quantity)
+            ->call('save');
     }
 
 }

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 
@@ -18,9 +19,11 @@ class DatabaseSeeder extends Seeder
         Storage::disk('public')->deleteDirectory('subcategories');
         Storage::disk('public')->deleteDirectory('products');
 
+
         Storage::disk('public')->makeDirectory('categories');
         Storage::disk('public')->makeDirectory('subcategories');
         Storage::disk('public')->makeDirectory('products');
+
 
         $this->call(UserSeeder::class);
         $this->call(CategorySeeder::class);
@@ -31,5 +34,6 @@ class DatabaseSeeder extends Seeder
         $this->call(SizeSeeder::class);
         $this->call(ColorSizeSeeder::class);
         $this->call(DepartmentSeeder::class);
+
     }
 }

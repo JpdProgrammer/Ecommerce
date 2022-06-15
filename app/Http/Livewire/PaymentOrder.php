@@ -10,7 +10,6 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class PaymentOrder extends Component
 {
     use AuthorizesRequests;
-
     public $order;
 
     protected $listeners = ['payOrder'];
@@ -20,12 +19,19 @@ class PaymentOrder extends Component
         $this->order = $order;
     }
 
+    public function payment(User $user, Order $order)
+    {
+        if ($order->status == 1) {
+            return true;
+        }else {
+            return false;
+        }
+    }
+
     public function payOrder()
     {
         $this->order->status = 2;
-
         $this->productSold();
-
         $this->order->save();
 
         return redirect()->route('orders.show', $this->order);
@@ -38,15 +44,16 @@ class PaymentOrder extends Component
 
         foreach ($items as $item) {
             $product = Product::find($item->id);
-            $product->sold = $item->qty +  $product->sold;
+            $product->setTimesSold($item->qty + $product->timesSold);
             $product->save();
         }
+
+        return $product;
     }
 
     public function render()
     {
         $this->authorize('view', $this->order);
-        $this->authorize('payment', $this->order);
 
         $items = json_decode($this->order->content);
         $envio = json_decode($this->order->envio);

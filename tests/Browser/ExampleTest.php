@@ -2,6 +2,7 @@
 
 namespace Tests\Browser;
 
+use App\Models\Category;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
@@ -10,19 +11,15 @@ class ExampleTest extends DuskTestCase
 {
     use  DatabaseMigrations;
 
-    /**
-     * A basic browser test example.
-     *
-     * @return void
-     */
+    /** @test */
     public function testBasicExample()
     {
-        $category = $this->createCategory();
+        Category::factory()->create();
 
-        $this->browse(function (Browser $browser) use ($category) {
+        $this->browse(function (Browser $browser) {
             $browser->visit('/')
-                ->assertSee('Categorías')
-                ->screenshot('TestBasicExample');
+                ->assertSee('Hola')
+                ->screenshot('TestBasdsfsdicExample');
         });
     }
 }

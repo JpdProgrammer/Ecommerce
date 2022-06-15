@@ -20,12 +20,40 @@ class CreateOrder extends Component
     public $rules = [
         'contact' => 'required',
         'phone' => 'required',
-        'envio_type' => 'required'
+        'envio_type' => 'required',
     ];
 
     public function mount()
     {
         $this->departments = Department::all();
+    }
+
+    public function updatedEnvioType($value)
+    {
+        if($value == 1) {
+            $this->resetValidation([
+                'department_id', 'city_id','district_id','address','reference',
+            ]);
+        }
+    }
+
+    public function updatedDepartmentId($value)
+    {
+        $this->cities = City::where('department_id', $value)->get();
+
+        $this->reset(['city_id', 'district_id']);
+    }
+
+    public function updatedCityId($value)
+    {
+
+        $city = City::find($value);
+
+        $this->shipping_cost = $city->cost;
+
+        $this->districts = District::where('city_id', $value)->get();
+
+        $this->reset('district_id');
     }
 
     public function create_order()
@@ -60,44 +88,19 @@ class CreateOrder extends Component
                 'city' => City::find($this->city_id)->name,
                 'district' => District::find($this->district_id)->name,
                 'address' => $this->address,
-                'reference' => $this->reference
+                'reference' => $this->reference,
             ]);
         }
 
         $order->save();
 
-        foreach (Cart::content() as $item) {
+        foreach (Cart::Content() as $item) {
             discount($item);
         }
 
         Cart::destroy();
 
         return redirect()->route('orders.payment', $order);
-    }
-
-    public function updatedEnvioType($value)
-    {
-        if ($value == 1) {
-            $this->resetValidation([
-                'department_id', 'city_id', 'district_id', 'address', 'reference',
-            ]);
-        }
-    }
-
-    public function updatedDepartmentId($value){
-        $this->cities = City::where('department_id', $value)->get();
-
-        $this->reset(['city_id', 'district_id']);
-    }
-
-    public function updatedCityId($value){
-        $city = City::find($value);
-
-        $this->shipping_cost = $city->cost;
-
-        $this->districts = District::where('city_id', $value)->get();
-
-        $this->reset('district_id');
     }
 
     public function render()

@@ -20,5 +20,4 @@ class Color extends Model
     {
         return $this->belongsToMany(Size::class);
     }
-
 }

@@ -12,16 +12,16 @@ class DepartmentComponent extends Component
     protected $listeners = ['delete'];
 
     public $createForm = [
-        'name' => ''
+        'name' => "",
     ];
 
     public $editForm = [
         'open' => false,
-        'name' => ''
+        'name' => ""
     ];
 
     protected $validationAttributes = [
-        'createForm.name' => 'nombre'
+        'createForm.name' => 'nombre',
     ];
 
     public function mount()
@@ -37,7 +37,7 @@ class DepartmentComponent extends Component
     public function save()
     {
         $this->validate([
-            "createForm.name" => 'required'
+           'createForm.name' => 'required',
         ]);
 
         Department::create($this->createForm);
@@ -52,7 +52,6 @@ class DepartmentComponent extends Component
     public function edit(Department $department)
     {
         $this->department = $department;
-
         $this->editForm['open'] = true;
         $this->editForm['name'] = $department->name;
     }
@@ -63,7 +62,6 @@ class DepartmentComponent extends Component
         $this->department->save();
 
         $this->reset('editForm');
-
         $this->getDepartments();
     }
 
@@ -75,6 +73,7 @@ class DepartmentComponent extends Component
 
     public function render()
     {
-        return view('livewire.admin.department-component')->layout('layouts.admin');
+        return view('livewire.admin.department-component')
+            ->layout('layouts.admin');
     }
 }

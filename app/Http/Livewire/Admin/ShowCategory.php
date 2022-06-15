@@ -25,7 +25,7 @@ class ShowCategory extends Component
         'name' => null,
         'slug' => null,
         'color' => false,
-        'size' => false
+        'size' => false,
     ];
 
     protected $rules = [
@@ -40,10 +40,6 @@ class ShowCategory extends Component
         'createForm.slug' => 'slug',
         'createForm.color' => 'color',
         'createForm.size' => 'talla',
-        'editForm.name' => 'nombre',
-        'editForm.slug' => 'slug',
-        'editForm.color' => 'color',
-        'editForm.size' => 'talla',
     ];
 
     public function mount(Category $category)
@@ -55,11 +51,6 @@ class ShowCategory extends Component
     public function updatedCreateFormName($value)
     {
         $this->createForm['slug'] = Str::slug($value);
-    }
-
-    public function updatedEditFormName($value)
-    {
-        $this->editForm['slug'] = Str::slug($value);
     }
 
     public function getSubcategories()
@@ -76,7 +67,7 @@ class ShowCategory extends Component
         $this->getSubcategories();
     }
 
-    public function edit(Subcategory $subcategory)
+    public function edit (Subcategory $subcategory)
     {
         $this->resetValidation();
 
@@ -85,6 +76,7 @@ class ShowCategory extends Component
         $this->editForm['open'] = true;
 
         $this->editForm['name'] = $subcategory->name;
+
         $this->editForm['slug'] = $subcategory->slug;
         $this->editForm['color'] = $subcategory->color;
         $this->editForm['size'] = $subcategory->size;
@@ -97,6 +89,10 @@ class ShowCategory extends Component
             'editForm.slug' => 'required|unique:subcategories,slug,' . $this->subcategory->id,
             'editForm.color' => 'required',
             'editForm.size' => 'required',
+            'editForm.name' => 'nombre',
+            'editForm.slug' => 'slug',
+            'editForm.color' => 'color',
+            'editForm.size' => 'talla',
         ]);
 
         $this->subcategory->update($this->editForm);
@@ -111,8 +107,14 @@ class ShowCategory extends Component
         $this->getSubcategories();
     }
 
+    public function updatedEditFormName($value)
+    {
+        $this->editForm['slug'] = Str::slug($value);
+    }
+
     public function render()
     {
-        return view('livewire.admin.show-category')->layout('layouts.admin');;
+        return view('livewire.admin.show-category')
+            ->layout('layouts.admin');
     }
 }

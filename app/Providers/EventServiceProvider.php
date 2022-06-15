@@ -25,10 +25,10 @@ class EventServiceProvider extends ServiceProvider
             SendEmailVerificationNotification::class,
         ],
         Login::class => [
-            MergeTheCart::class,
+            MergeTheCart::class
         ],
         Logout::class => [
-            MergeTheCartLogout::class,
+            MergeTheCartLogout::class
         ],
     ];
 

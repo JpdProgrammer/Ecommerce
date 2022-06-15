@@ -7,15 +7,15 @@ use Livewire\Component;
 
 class SizeProduct extends Component
 {
-    public $product, $name, $size;
+    public $product,$name, $size;
     public $open = false;
     public $name_edit;
 
-    protected $listeners = ['delete'];
-
     protected $rules = [
-        'name' => 'required'
+        'name' => 'required',
     ];
+
+    protected $listeners = ['delete'];
 
     public function save()
     {
@@ -26,15 +26,14 @@ class SizeProduct extends Component
             ->first();
 
         if ($size) {
-            $this->emit('errorSize', 'Esa talla ya existe');
+           $this->emit('errorSize', 'Esa talla ya existe');
         } else {
             $this->product->sizes()->create([
-                'name' => $this->name
+                'name' => $this->name,
             ]);
         }
 
         $this->product = $this->product->fresh();
-
         $this->reset('name');
     }
 

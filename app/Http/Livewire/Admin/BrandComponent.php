@@ -11,32 +11,32 @@ class BrandComponent extends Component
 
     protected $listeners = ['delete'];
 
-    public $createForm=[
-        'name' => null
+    public $createForm = [
+        'name' => null,
     ];
 
-    public $editForm=[
+    public $editForm = [
         'open' => false,
-        'name' => null
+        'name' => null,
     ];
 
-    public $rules = [
-        'createForm.name' => 'required'
+    protected $rules = [
+      'createForm.name' => 'required',
     ];
 
     protected $validationAttributes = [
         'createForm.name' => 'nombre',
-        'editForm.name' => 'nombre'
+        'editForm.name' => 'nombre',
     ];
-
-    public function mount()
-    {
-        $this->getBrands();
-    }
 
     public function getBrands()
     {
         $this->brands = Brand::all();
+    }
+
+    public function mount()
+    {
+        $this->getBrands();
     }
 
     public function save()
@@ -54,7 +54,7 @@ class BrandComponent extends Component
     {
         $this->brand = $brand;
 
-        $this->editForm['open'] = true;
+        $this->editForm['open'] = open;
         $this->editForm['name'] = $brand->name;
     }
 
@@ -78,6 +78,7 @@ class BrandComponent extends Component
 
     public function render()
     {
-        return view('livewire.admin.brand-component')->layout('layouts.admin');
+        return view('livewire.admin.brand-component')
+            ->layout('layouts.admin');
     }
 }

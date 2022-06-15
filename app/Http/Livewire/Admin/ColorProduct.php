@@ -2,41 +2,38 @@
 
 namespace App\Http\Livewire\Admin;
 
+use App\Models\ColorProduct as TbPivot;
 use App\Models\Color;
 use Livewire\Component;
-use App\Models\ColorProduct as TbPivot;
 
 class ColorProduct extends Component
 {
     public $product, $colors;
+
     public $color_id, $quantity;
 
     public $open = false;
 
     public $pivot, $pivot_color_id, $pivot_quantity;
 
-    protected $rules = [
-        'color_id' => 'required',
-        'quantity' => 'required|numeric'
-    ];
-
     protected $listeners = ['delete'];
 
-    public function mount()
-    {
-        $this->colors = Color::all();
-    }
+    protected $rules = [
+        'color_id' => 'required',
+        'quantity' => 'required|numeric',
+    ];
 
-    public function save(){
+    public function save() {
         $this->validate();
 
         $pivot = TbPivot::where('color_id', $this->color_id)
             ->where('product_id', $this->product->id)
             ->first();
 
-        if ($pivot) {
+        if($pivot) {
             $pivot->quantity += $this->quantity;
             $pivot->save();
+
         } else {
             $this->product->colors()->attach([
                 $this->color_id => [
@@ -44,7 +41,6 @@ class ColorProduct extends Component
                 ]
             ]);
         }
-
         $this->reset(['color_id', 'quantity']);
 
         $this->emit('saved');
@@ -55,11 +51,8 @@ class ColorProduct extends Component
     public function edit(TbPivot $pivot)
     {
         $this->open = true;
-
         $this->pivot = $pivot;
-
         $this->pivot_color_id = $pivot->color_id;
-
         $this->pivot_quantity = $pivot->quantity;
     }
 
@@ -73,19 +66,23 @@ class ColorProduct extends Component
         $this->product = $this->product->fresh();
 
         $this->open = false;
+
     }
 
     public function delete(TbPivot $pivot)
     {
         $pivot->delete();
-
         $this->product = $this->product->fresh();
+    }
+
+    public function mount()
+    {
+        $this->colors = Color::all();
     }
 
     public function render()
     {
         $productColors = $this->product->colors;
-
         return view('livewire.admin.color-product', compact('productColors'));
     }
 }

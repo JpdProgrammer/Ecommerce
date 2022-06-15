@@ -9,21 +9,11 @@ use Livewire\WithPagination;
 class UserComponent extends Component
 {
     use WithPagination;
-
     public $search;
 
     public function updatingSearch()
     {
         $this->resetPage();
-    }
-
-    public function assignRole(User $user, $value)
-    {
-        if ($value == '1') {
-            $user->assignRole('admin');
-        } else {
-            $user->removeRole('admin');
-        }
     }
 
     public function render()
@@ -34,6 +24,16 @@ class UserComponent extends Component
                     ->orWhere('email', 'LIKE', '%' . $this->search . '%');
             })->orderBy('id')->paginate();
 
-        return view('livewire.admin.user-component', compact('users'))->layout('layouts.admin');
+        return view('livewire.admin.user-component', compact('users'))
+            ->layout('layouts.admin');
+    }
+
+    public function assignRole(User $user, $value)
+    {
+        if ($value == '1') {
+            $user->assignRole('admin');
+        } else {
+            $user->removeRole('admin');
+        }
     }
 }

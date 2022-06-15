@@ -8,6 +8,7 @@ use Livewire\Component;
 
 class ShowCity extends Component
 {
+
     public $city, $districts, $district;
 
     protected $listeners = ['delete'];
@@ -20,10 +21,10 @@ class ShowCity extends Component
         'open' => false,
         'name' => '',
     ];
-
     protected $validationAttributes = [
         'createForm.name' => 'nombre',
     ];
+
 
     public function mount(City $city)
     {
@@ -35,7 +36,6 @@ class ShowCity extends Component
     {
         $this->districts = District::where('city_id', $this->city->id)->get();
     }
-
     public function save()
     {
         $this->validate([
@@ -46,14 +46,12 @@ class ShowCity extends Component
         $this->getDistricts();
         $this->emit('saved');
     }
-
     public function edit(District $district)
     {
         $this->district = $district;
         $this->editForm['open'] = true;
         $this->editForm['name'] = $district->name;
     }
-
     public function update()
     {
         $this->district->name = $this->editForm['name'];
@@ -61,15 +59,16 @@ class ShowCity extends Component
         $this->reset('editForm');
         $this->getDistricts();
     }
-
     public function delete(District $district)
     {
         $district->delete();
         $this->getDistricts();
     }
 
+
     public function render()
     {
-        return view('livewire.admin.show-city')->layout('layouts.admin');
+        return view('livewire.admin.show-city')
+            ->layout('layouts.admin');
     }
 }

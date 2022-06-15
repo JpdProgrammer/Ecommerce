@@ -9,20 +9,26 @@ use Livewire\Component;
 
 class AddCartItemSize extends Component
 {
-    public $product;
-    public $size_id = '';
+    public $product, $sizes;
+    public $size_id = "";
     public $colors = [];
     public $qty = 1;
     public $quantity = 0;
-    public $color_id = '';
-    public $options = [
-        'sold' => 0
-    ];
+    public $color_id = "";
+    public $options = [];
 
     public function mount()
     {
         $this->sizes = $this->product->sizes;
         $this->options['image'] = Storage::url($this->product->images->first()->url);
+    }
+
+    public function updatedSizeId($value)
+    {
+        $size = Size::find($value);
+        $this->colors = $size->colors;
+        $this->options['size'] = $size->name;
+        $this->options['size_id'] = $size->id;
     }
 
     public function updatedColorId($value)
@@ -34,19 +40,10 @@ class AddCartItemSize extends Component
         $this->options['color_id'] = $color->id;
     }
 
-    public function updatedSizeId($value)
-    {
-        $size = Size::find($value);
-        $this->colors = $size->colors;
-        $this->options['size'] = $size->name;
-        $this->options['size_id'] = $size->id;
-    }
-
     public function decrement()
     {
         $this->qty--;
     }
-
     public function increment()
     {
         $this->qty++;
@@ -64,7 +61,6 @@ class AddCartItemSize extends Component
         ]);
 
         $this->quantity = qty_available($this->product->id, $this->color_id, $this->size_id);
-
         $this->reset('qty');
 
         $this->emitTo('dropdown-cart', 'render');

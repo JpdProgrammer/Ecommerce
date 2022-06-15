@@ -8,7 +8,8 @@ use Livewire\Component;
 class UpdateCartItem extends Component
 {
     public $rowId;
-    public $qty, $quantity;
+    public $qty;
+    public $quantity;
 
     public function mount()
     {

@@ -9,7 +9,8 @@ use Livewire\Component;
 class UpdateCartItemColor extends Component
 {
     public $rowId;
-    public $qty, $quantity;
+    public $qty;
+    public $quantity;
 
     public function mount()
     {

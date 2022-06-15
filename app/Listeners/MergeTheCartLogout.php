@@ -2,8 +2,8 @@
 
 namespace App\Listeners;
 
-use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Auth\Events\Logout;
+use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
@@ -22,7 +22,7 @@ class MergeTheCartLogout
     /**
      * Handle the event.
      *
-     * @param  Logout  $event
+     * @param  \App\Events\Logout  $event
      * @return void
      */
     public function handle(Logout $event)

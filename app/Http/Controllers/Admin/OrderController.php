@@ -18,7 +18,7 @@ class OrderController extends Controller
 
         $orders = $orders->get();
 
-        for ($i = 2; $i <= 5; $i++) {
+        for ($i = 2; $i <= 5 ; $i++) {
             $ordersByStatus[$i] = Order::where('status', $i)->count();
         }
 
